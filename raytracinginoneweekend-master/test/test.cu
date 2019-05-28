@@ -51,7 +51,11 @@ int main() {
     // Render our buffer
     dim3 blocks(nx/tx+1,ny/ty+1);
     dim3 threads(tx,ty);
-    render<<<blocks, threads>>>(fb, nx, ny);
+    render<<<blocks, threads>>>(fb, nx, ny,
+                                vec3(-2.0, -1.0, -1.0),
+                                vec3(4.0, 0.0, 0.0),
+                                vec3(0.0, 2.0, 0.0),
+                                vec3(0.0, 0.0, 0.0));
     checkCudaErrors(cudaGetLastError());
     checkCudaErrors(cudaDeviceSynchronize());
 
