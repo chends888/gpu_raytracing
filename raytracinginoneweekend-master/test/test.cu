@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include "vec3.h"
+
 #define checkCudaErrors(val) check_cuda( (val), #val, __FILE__, __LINE__ )
 
 void check_cuda(cudaError_t result, char const *const func, const char *const file, int const line) {
@@ -11,14 +13,12 @@ void check_cuda(cudaError_t result, char const *const func, const char *const fi
         exit(99);
     }
 }
-__global__ void render(float *fb, int max_x, int max_y) {
+__global__ void render(vec3 *fb, int max_x, int max_y) {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
     if((i >= max_x) || (j >= max_y)) return;
-    int pixel_index = j*max_x*3 + i*3;
-    fb[pixel_index + 0] = float(i) / max_x;
-    fb[pixel_index + 1] = float(j) / max_y;
-    fb[pixel_index + 2] = 0.2;
+    int pixel_index = j*max_x + i;
+    fb[pixel_index] = vec3( float(i) / max_x, float(j) / max_y, 0.2f);
 }
 
 
