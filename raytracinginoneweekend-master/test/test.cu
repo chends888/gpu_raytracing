@@ -26,10 +26,10 @@ int main() {
     int nx = 100;
     int ny = 50;
     int num_pixels = nx*ny;
-    size_t fb_size = 3*num_pixels*sizeof(float);
+    size_t fb_size = 3*num_pixels*sizeof(vec3);
 
     // allocate FB
-    float *fb;
+    vec3 *fb;
     checkCudaErrors(cudaMallocManaged((void **)&fb, fb_size));
 
 
