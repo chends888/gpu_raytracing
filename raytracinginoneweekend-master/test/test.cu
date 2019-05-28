@@ -14,6 +14,13 @@ void check_cuda(cudaError_t result, char const *const func, const char *const fi
         exit(99);
     }
 }
+
+__device__ vec3 color(const ray& r) {
+    vec3 unit_direction = unit_vector(r.direction());
+    float t = 0.5f*(unit_direction.y() + 1.0f);
+    return (1.0f-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
+}
+
 __global__ void render(vec3 *fb, int max_x, int max_y, vec3 lower_left_corner, vec3 horizontal, vec3 vertical, vec3 origin) {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
@@ -25,11 +32,6 @@ __global__ void render(vec3 *fb, int max_x, int max_y, vec3 lower_left_corner, v
     fb[pixel_index] = color(r);
 }
 
-__device__ vec3 color(const ray& r) {
-    vec3 unit_direction = unit_vector(r.direction());
-    float t = 0.5f*(unit_direction.y() + 1.0f);
-    return (1.0f-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
- }
 
 
 int main() {
