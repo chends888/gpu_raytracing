@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <float.h>
 #include "vec3.h"
 #include "ray.h"
 #include "sphere.h"
