@@ -128,5 +128,14 @@ int main() {
             myfile << ir << " " << ig << " " << ib << "\n";
         }
     }
+    // clean up
+    checkCudaErrors(cudaDeviceSynchronize());
+    free_world<<<1,1>>>(d_list,d_world);
+    checkCudaErrors(cudaGetLastError());
+    checkCudaErrors(cudaFree(d_list));
+    checkCudaErrors(cudaFree(d_world));
     checkCudaErrors(cudaFree(fb));
+
+    // useful for cuda-memcheck --leak-check full
+    cudaDeviceReset();
 }
