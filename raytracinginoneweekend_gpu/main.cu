@@ -56,7 +56,7 @@ __global__ void render(vec3 *fb, int max_x, int max_y, vec3 lower_left_corner, v
     float u = float(i) / float(max_x);
     float v = float(j) / float(max_y);
     ray r(origin, lower_left_corner + u*horizontal + v*vertical);
-    fb[pixel_index] = color(r);
+    fb[pixel_index] = color(r, world);
 }
 
 __global__ void create_world(hitable **d_list, hitable **d_world) {
