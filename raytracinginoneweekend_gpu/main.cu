@@ -16,6 +16,8 @@ void check_cuda(cudaError_t result, char const *const func, const char *const fi
 }
 
 __device__ vec3 color(const ray& r) {
+    if (hit_sphere(vec3(0,0,-1), 0.5, r))
+        return vec3(1,0,0);
     vec3 unit_direction = unit_vector(r.direction());
     float t = 0.5f*(unit_direction.y() + 1.0f);
     return (1.0f-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
@@ -32,6 +34,13 @@ __global__ void render(vec3 *fb, int max_x, int max_y, vec3 lower_left_corner, v
     fb[pixel_index] = color(r);
 }
 
+// __global__ void create_world(hitable **d_list, hitable **d_world) {
+//     if (threadIdx.x == 0 && blockIdx.x == 0) {
+//         *(d_list)   = new sphere(vec3(0,0,-1), 0.5);
+//         *(d_list+1) = new sphere(vec3(0,-100.5,-1), 100);
+//         *d_world    = new hitable_list(d_list,2);
+//     }
+// }
 
 
 int main() {
@@ -39,6 +48,14 @@ int main() {
     int ny = 50;
     int num_pixels = nx*ny;
     size_t fb_size = 3*num_pixels*sizeof(vec3);
+    // hitable **d_list;
+    // checkCudaErrors(cudaMalloc((void **)&amp;d_list, 2*sizeof(hitable *)));
+    // hitable **d_world;
+    // checkCudaErrors(cudaMalloc((void **)&amp;d_world, sizeof(hitable *)));
+    // create_world&lt;&lt;&lt;1,1&gt;&gt;&gt;(d_list,d_world);
+    // checkCudaErrors(cudaGetLastError());
+    // checkCudaErrors(cudaDeviceSynchronize());
+
 
     // allocate FB
     vec3 *fb;
@@ -66,12 +83,13 @@ int main() {
     myfile << "P3\n" << nx << " " << ny << "\n255\n";
     for (int j = ny-1; j >= 0; j--) {
         for (int i = 0; i < nx; i++) {
-            float r = float(i) / float (nx);
-            float g = float(j) / float (ny);
-            float b = 0.2;
-            int ir = int(255.99*r); 
-            int ig = int(255.99*g); 
-            int ib = int(255.99*b); 
+            // float r = float(i) / float (nx);
+            // float g = float(j) / float (ny);
+            // float b = 0.2;
+            size_t pixel_index = j*nx + i;
+            int ir = int(255.99*fb[pixel_index].r());
+            int ig = int(255.99*fb[pixel_index].g());
+            int ib = int(255.99*fb[pixel_index].b());
             // std::cout << ir << " " << ig << " " << ib << "\n";
             myfile << ir << " " << ig << " " << ib << "\n";
         }
