@@ -48,7 +48,7 @@ __device__ vec3 color(const ray& r, hitable **world) {
 }
 
 
-__global__ void render(vec3 *fb, int max_x, int max_y, vec3 lower_left_corner, vec3 horizontal, vec3 vertical, vec3 origin) {
+__global__ void render(vec3 *fb, int max_x, int max_y, vec3 lower_left_corner, vec3 horizontal, vec3 vertical, vec3 origin, hitable **world) {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
     if((i >= max_x) || (j >= max_y)) return;
@@ -105,7 +105,8 @@ int main() {
                                 vec3(-2.0, -1.0, -1.0),
                                 vec3(4.0, 0.0, 0.0),
                                 vec3(0.0, 2.0, 0.0),
-                                vec3(0.0, 0.0, 0.0));
+                                vec3(0.0, 0.0, 0.0),
+                                d_world);
     checkCudaErrors(cudaGetLastError());
     checkCudaErrors(cudaDeviceSynchronize());
 
