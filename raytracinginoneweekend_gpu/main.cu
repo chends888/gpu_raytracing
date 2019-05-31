@@ -15,6 +15,15 @@ void check_cuda(cudaError_t result, char const *const func, const char *const fi
     }
 }
 
+__device__ bool hit_sphere(const vec3& center, float radius, const ray& r) {
+    vec3 oc = r.origin() - center;
+    float a = dot(r.direction(), r.direction());
+    float b = 2.0f * dot(oc, r.direction());
+    float c = dot(oc, oc) - radius*radius;
+    float discriminant = b*b - 4.0f*a*c;
+    return (discriminant > 0.0f);
+}
+
 __device__ vec3 color(const ray& r) {
     if (hit_sphere(vec3(0,0,-1), 0.5, r))
         return vec3(1,0,0);
