@@ -6,7 +6,7 @@
 #include "sphere.h"
 #include "hitable_list.h"
 
-#define checkCudaErrors(val) check_cuda( (val), #val, __FILE__, __LINE__ )
+#define checkCudaErrors(val) check_cuda((val), #val, __FILE__, __LINE__)
 
 void check_cuda(cudaError_t result, char const *const func, const char *const file, int const line) {
     if (result) {
@@ -51,12 +51,15 @@ __device__ vec3 color(const ray& r, hitable **world) {
 __global__ void render(vec3 *fb, int max_x, int max_y, vec3 lower_left_corner, vec3 horizontal, vec3 vertical, vec3 origin, hitable **world) {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
-    if((i >= max_x) || (j >= max_y)) return;
-    int pixel_index = j*max_x + i;
-    float u = float(i) / float(max_x);
-    float v = float(j) / float(max_y);
-    ray r(origin, lower_left_corner + u*horizontal + v*vertical);
-    fb[pixel_index] = color(r, world);
+    // Check if block id is within block size
+    if ((i < max_x) && (j < max_y)) {
+        int pixel_index = j*max_x + i;
+        float u = float(i) / float(max_x);
+        float v = float(j) / float(max_y);
+        ray r(origin, lower_left_corner + u*horizontal + v*vertical);
+        fb[pixel_index] = color(r, world);
+    }
+
 }
 
 __global__ void create_world(hitable **d_list, hitable **d_world) {
@@ -80,14 +83,12 @@ int main() {
     int ny = 50;
     int num_pixels = nx*ny;
     size_t fb_size = 3*num_pixels*sizeof(vec3);
-
-
-    // allocate FB
+    // Allocate for individual pixels in GPU
     vec3 *fb;
     checkCudaErrors(cudaMallocManaged((void **)&fb, fb_size));
 
 
-    // make our world of hitables
+    // Make our world of hitables
     hitable **d_list;
     checkCudaErrors(cudaMalloc((void **)&d_list, 2*sizeof(hitable *)));
     hitable **d_world;
@@ -98,7 +99,7 @@ int main() {
 
     int tx = 8;
     int ty = 8;
-    // Render our buffer
+    // Render the buffer on GPU
     dim3 blocks(nx/tx+1,ny/ty+1);
     dim3 threads(tx,ty);
     render<<<blocks, threads>>>(fb, nx, ny,
@@ -109,8 +110,6 @@ int main() {
                                 d_world);
     checkCudaErrors(cudaGetLastError());
     checkCudaErrors(cudaDeviceSynchronize());
-
-
 
     std::ofstream myfile;
     myfile.open ("image.ppm");
