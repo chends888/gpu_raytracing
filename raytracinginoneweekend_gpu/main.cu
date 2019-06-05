@@ -54,7 +54,7 @@ __global__ void create_world(hitable **d_list, hitable **d_world) {
     if (threadIdx.x == 0 && blockIdx.x == 0) {
         // Generate two spheres
         *(d_list)   = new sphere(vec3(0,0,-1), 0.5);
-        *(d_list+1) = new sphere(vec3(0,-1,-1), 1);
+        *(d_list+1) = new sphere(vec3(0,-1.3,-1), 1);
         *d_world    = new hitable_list(d_list,2);
     }
 }
