@@ -69,8 +69,12 @@ __global__ void free_world(hitable **d_list, hitable **d_world) {
 
 int main() {
     auto start = std::chrono::high_resolution_clock::now();
-    int nx = 100;
-    int ny = 50;
+    int nx;
+    int ny;
+    std::cout << "Insert number of x pixels: ";
+    std::cin >> nx;
+    std::cout << "Insert number of y pixels: ";
+    std::cin >> ny;
     int num_pixels = nx*ny;
     size_t fb_size = 3*num_pixels*sizeof(vec3);
     vec3 *fb;
