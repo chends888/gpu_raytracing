@@ -74,7 +74,6 @@ int main() {
     // Allocate frame buffer for individual pixels in GPU
     checkCudaErrors(cudaMallocManaged((void **)&fb, fb_size));
 
-
     // Create world of hitables
     hitable **d_list;
     checkCudaErrors(cudaMalloc((void **)&d_list, 2*sizeof(hitable *)));
@@ -107,9 +106,9 @@ int main() {
     for (int j = ny-1; j >= 0; j--) {
         for (int i = 0; i < nx; i++) {
             size_t pixel_index = j*nx + i;
-            int ir = int(255.99*fb[pixel_index].r());
-            int ig = int(255.99*fb[pixel_index].g());
-            int ib = int(255.99*fb[pixel_index].b());
+            int ir = int(255*fb[pixel_index].r());
+            int ig = int(255*fb[pixel_index].g());
+            int ib = int(255*fb[pixel_index].b());
             // std::cout << ir << " " << ig << " " << ib << "\n";
             myfile << ir << " " << ig << " " << ib << "\n";
         }
