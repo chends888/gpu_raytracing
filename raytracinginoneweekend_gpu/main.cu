@@ -3,10 +3,12 @@
 #include <iostream>
 #include <fstream>
 #include <float.h>
+#include <chrono>
 #include "vec3.h"
 #include "ray.h"
 #include "sphere.h"
 #include "hitable_list.h"
+
 
 #define checkCudaErrors(val) check_cuda((val), #val, __FILE__, __LINE__)
 
@@ -66,6 +68,7 @@ __global__ void free_world(hitable **d_list, hitable **d_world) {
 
 
 int main() {
+    auto start = std::chrono::high_resolution_clock::now();
     int nx = 100;
     int ny = 50;
     int num_pixels = nx*ny;
@@ -113,6 +116,7 @@ int main() {
             myfile << ir << " " << ig << " " << ib << "\n";
         }
     }
+    myfile.close();
     // Free used memory and check errors
     checkCudaErrors(cudaDeviceSynchronize());
     free_world<<<1,1>>>(d_list,d_world);
@@ -123,4 +127,8 @@ int main() {
 
     // useful for cuda-memcheck --leak-check full
     cudaDeviceReset();
+
+    auto finish = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = finish - start;
+    std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 }
