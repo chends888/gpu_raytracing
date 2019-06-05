@@ -54,7 +54,7 @@ __global__ void create_world(hitable **d_list, hitable **d_world) {
     if (threadIdx.x == 0 && blockIdx.x == 0) {
         // Generate two spheres
         *(d_list)   = new sphere(vec3(0,0,-1), 0.5);
-        *(d_list+1) = new sphere(vec3(0,-1,-1), 0.5);
+        *(d_list+1) = new sphere(vec3(0,-1,-1), 1);
         *d_world    = new hitable_list(d_list,2);
     }
 }
@@ -68,7 +68,6 @@ __global__ void free_world(hitable **d_list, hitable **d_world) {
 
 
 int main() {
-    auto start = std::chrono::high_resolution_clock::now();
     int nx;
     int ny;
     std::cout << "Insert number of x pixels: ";
@@ -76,6 +75,8 @@ int main() {
     std::cout << "Insert number of y pixels: ";
     std::cin >> ny;
     int num_pixels = nx*ny;
+
+    auto start = std::chrono::high_resolution_clock::now();
     size_t fb_size = 3*num_pixels*sizeof(vec3);
     vec3 *fb;
     // Allocate frame buffer for individual pixels in GPU
