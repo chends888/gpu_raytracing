@@ -1,5 +1,6 @@
 // Código adaptado de:
 // https://devblogs.nvidia.com/accelerated-ray-tracing-cuda/
+// https://github.com/petershirley/raytracinginoneweekend
 #include <iostream>
 #include <fstream>
 #include <float.h>
@@ -9,8 +10,6 @@
 #include "sphere.h"
 #include "hitable_list.h"
 
-
-#define checkCudaErrors(val) check_cuda((val), #val, __FILE__, __LINE__)
 
 void check_cuda(cudaError_t result, char const *const func, const char *const file, int const line) {
     if (result) {
@@ -33,7 +32,6 @@ __device__ vec3 color(const ray& r, hitable **world) {
         return (1.0f-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
     }
 }
-
 
 // Defining GPU kernel
 __global__ void render(vec3 *fb, int width, int height, vec3 lower_left_corner, vec3 horizontal, vec3 vertical, vec3 origin, hitable **world) {
