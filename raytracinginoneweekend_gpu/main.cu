@@ -96,7 +96,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
     create_world<<<1,1>>>(d_list, d_world);
-    checkCudaErrors(cudaDeviceSynchronize());
+    cudaDeviceSynchronize();
 
     // Define number of threads per block
     int tx = 8;
@@ -111,7 +111,7 @@ int main() {
                                 vec3(0.0, 2.0, 0.0),
                                 vec3(0.0, 0.0, 0.0),
                                 d_world);
-    checkCudaErrors(cudaDeviceSynchronize());
+    cudaDeviceSynchronize();
 
     std::ofstream myfile;
     myfile.open ("image.ppm");
