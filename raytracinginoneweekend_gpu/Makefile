@@ -1,2 +1,2 @@
 raytracinggpu: main.cu
-	g++ main.cu
+	nvcc main.cu
