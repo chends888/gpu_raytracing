@@ -1,2 +1,2 @@
-raymake: test.cc
-	g++ test.cc
+raytracinggpu: main.cu
+	g++ main.cu
