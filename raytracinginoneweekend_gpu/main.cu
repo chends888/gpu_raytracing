@@ -102,8 +102,10 @@ int main() {
     int tx = 8;
     int ty = 8;
     dim3 threads(tx,ty);
+
     // Define block size
     dim3 blocks(nx/tx+1,ny/ty+1);
+
     // Render image on GPU
     render<<<blocks, threads>>>(fb, nx, ny,
                                 vec3(-2.0, -1.0, -1.0),
@@ -127,8 +129,8 @@ int main() {
         }
     }
     myfile.close();
-    // Free used memory
 
+    // Free used memory
     cudaDeviceReset();
 
     auto finish = std::chrono::high_resolution_clock::now();
