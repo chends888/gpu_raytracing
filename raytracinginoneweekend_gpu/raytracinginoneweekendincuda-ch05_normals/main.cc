@@ -28,6 +28,7 @@ int main() {
     std::cin >> ny;
     auto start = std::chrono::high_resolution_clock::now();
 
+    std::ofstream myfile;
     myfile.open ("image.ppm");
     myfile << "P3\n" << nx << " " << ny << "\n255\n";
 
