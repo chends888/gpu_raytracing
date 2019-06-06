@@ -77,7 +77,7 @@ int main() {
 
     // Allocate frame buffer for individual pixels in GPU
     // Error checking: https://github.com/Insper/supercomp/blob/master/gpu/add.cu
-    error = cudaMallocManaged((void **)&fb, fb_size));
+    error = cudaMallocManaged((void **)&fb, fb_size);
     if(error!=cudaSuccess) {
         std::cout << "Memory Allocation CUDA failure " << __FILE__ << ":" << __LINE__ << ": '" << cudaGetErrorString(error) << "'\n";
         exit(EXIT_FAILURE);
@@ -85,14 +85,14 @@ int main() {
 
     // Create world of hitables
     hitable **d_list;
-    error = cudaMalloc((void **)&d_list, 2*sizeof(hitable *)));
+    error = cudaMalloc((void **)&d_list, 2*sizeof(hitable *));
     if(error!=cudaSuccess) {
         std::cout << "Memory Allocation CUDA failure " << __FILE__ << ":" << __LINE__ << ": '" << cudaGetErrorString(error) << "'\n";
         exit(EXIT_FAILURE);
     }
 
     hitable **d_world;
-    error = cudaMalloc((void **)&d_world, sizeof(hitable *)));
+    error = cudaMalloc((void **)&d_world, sizeof(hitable *));
     if(error!=cudaSuccess) {
         std::cout << "Memory Allocation CUDA failure " << __FILE__ << ":" << __LINE__ << ": '" << cudaGetErrorString(error) << "'\n";
         exit(EXIT_FAILURE);
