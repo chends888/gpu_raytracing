@@ -59,15 +59,10 @@ __global__ void create_world(hitable **d_list, hitable **d_world) {
     }
 }
 
-__global__ void free_world(hitable **d_list, hitable **d_world) {
-    delete *(d_list);
-    delete *(d_list+1);
-    delete *d_world;
-}
-
-
 
 int main() {
+    cudaError_t error;
+
     int nx;
     int ny;
     std::cout << "Insert number of x pixels: ";
@@ -79,16 +74,30 @@ int main() {
     auto start = std::chrono::high_resolution_clock::now();
     size_t fb_size = 3*num_pixels*sizeof(vec3);
     vec3 *fb;
+
     // Allocate frame buffer for individual pixels in GPU
-    checkCudaErrors(cudaMallocManaged((void **)&fb, fb_size));
+    // Error checking: https://github.com/Insper/supercomp/blob/master/gpu/add.cu
+    error = cudaMallocManaged((void **)&fb, fb_size));
+    if(error!=cudaSuccess) {
+        std::cout << "Memory Allocation CUDA failure " << __FILE__ << ":" << __LINE__ << ": '" << cudaGetErrorString(error) << "'\n";
+        exit(EXIT_FAILURE);
+    }
 
     // Create world of hitables
     hitable **d_list;
-    checkCudaErrors(cudaMalloc((void **)&d_list, 2*sizeof(hitable *)));
+    error = cudaMalloc((void **)&d_list, 2*sizeof(hitable *)));
+    if(error!=cudaSuccess) {
+        std::cout << "Memory Allocation CUDA failure " << __FILE__ << ":" << __LINE__ << ": '" << cudaGetErrorString(error) << "'\n";
+        exit(EXIT_FAILURE);
+    }
+
     hitable **d_world;
-    checkCudaErrors(cudaMalloc((void **)&d_world, sizeof(hitable *)));
+    error = cudaMalloc((void **)&d_world, sizeof(hitable *)));
+    if(error!=cudaSuccess) {
+        std::cout << "Memory Allocation CUDA failure " << __FILE__ << ":" << __LINE__ << ": '" << cudaGetErrorString(error) << "'\n";
+        exit(EXIT_FAILURE);
+    }
     create_world<<<1,1>>>(d_list, d_world);
-    checkCudaErrors(cudaGetLastError());
     checkCudaErrors(cudaDeviceSynchronize());
 
     // Define number of threads per block
@@ -104,7 +113,6 @@ int main() {
                                 vec3(0.0, 2.0, 0.0),
                                 vec3(0.0, 0.0, 0.0),
                                 d_world);
-    checkCudaErrors(cudaGetLastError());
     checkCudaErrors(cudaDeviceSynchronize());
 
     std::ofstream myfile;
@@ -121,13 +129,7 @@ int main() {
         }
     }
     myfile.close();
-    // Free used memory and check errors
-    checkCudaErrors(cudaDeviceSynchronize());
-    free_world<<<1,1>>>(d_list,d_world);
-    checkCudaErrors(cudaGetLastError());
-    checkCudaErrors(cudaFree(d_list));
-    checkCudaErrors(cudaFree(d_world));
-    checkCudaErrors(cudaFree(fb));
+    // Free used memory
 
     cudaDeviceReset();
 
